@@ -3,6 +3,7 @@ package com.example.crud.controllers;
 import com.example.crud.domain.product.Product;
 import com.example.crud.domain.product.ProductRepository;
 import com.example.crud.domain.product.RequestProduct;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -17,7 +18,6 @@ import java.util.Optional;
 public class ProductController {
     @Autowired
     private ProductRepository repository;
-
     @GetMapping
     public ResponseEntity getAllProducts(){
         var allProducts = repository.findAllByActiveTrue();
@@ -27,9 +27,16 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity registerProduct(@RequestBody @Valid RequestProduct data){
-        Product newProduct = new Product(data);
-        repository.save(newProduct);
-        return ResponseEntity.ok(newProduct);
+        Optional<Product> existingProduct = repository.findByName(data.name());
+
+        if(existingProduct.isPresent()){
+            System.out.println(existingProduct);
+            throw new EntityExistsException();
+        } else {
+            Product newProduct = new Product(data);
+            repository.save(newProduct);
+            return ResponseEntity.ok(newProduct);
+        }
     }
 
     @PutMapping()
