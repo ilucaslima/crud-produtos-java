@@ -28,6 +28,11 @@ public class ProductController {
     @PostMapping
     public ResponseEntity registerProduct(@RequestBody @Valid RequestProduct data){
         Optional<Product> existingProduct = repository.findByName(data.name());
+        Integer pricing = data.price_in_cents();
+
+        if(pricing <= 0){
+            throw new IllegalArgumentException();
+        }
 
         if(existingProduct.isPresent()){
             System.out.println(existingProduct);

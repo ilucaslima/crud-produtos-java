@@ -18,4 +18,10 @@ public class RequestsExceptionHandler {
         ExceptionDTO response = new ExceptionDTO("Product already exists!", 409);
         return ResponseEntity.badRequest().body(response);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ExceptionDTO> invalidPricing(){
+        ExceptionDTO response = new ExceptionDTO("Value Invalid!", 400);
+        return ResponseEntity.badRequest().body(response);
+    }
 }
